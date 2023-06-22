@@ -1,4 +1,4 @@
-package br.com.fitlife;
+package api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
