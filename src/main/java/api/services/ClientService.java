@@ -1,13 +1,15 @@
 package api.services;
 
-import api.ClientNotFoundException;
+import api.dtos.ClientRecordDto;
 import api.models.ClientModel;
 import api.repositories.ClientRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ClientService {
@@ -19,38 +21,27 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    public ClientModel saveClient(ClientModel clientModel) {
+    public ClientModel saveClient(ClientRecordDto clientRecordDto) {
+        var clientModel = new ClientModel();
+        BeanUtils.copyProperties(clientRecordDto, clientModel);
         return clientRepository.save(clientModel);
     }
 
-    public ClientModel getClient(Long id){
-        return clientRepository.findById(id).orElse(null);
+    public Optional<ClientModel> getOneClient(UUID id){
+        Optional<ClientModel> client = clientRepository.findById(id);
+        return client;
     }
 
     public List<ClientModel> getAllClients(){
         return clientRepository.findAll();
     }
 
-    public ClientModel updateClient(Long id, ClientModel updatedClientModel){
-        return clientRepository.findById(id)
-                .map(clientModel -> {
-                    clientModel.setName(updatedClientModel.getName());
-                    clientModel.setBirthday(updatedClientModel.getBirthday());
-                    clientModel.setPhone(updatedClientModel.getPhone());
-                    clientModel.setMail(updatedClientModel.getMail());
-                    return clientRepository.save(clientModel);
-                })
-                .orElseThrow(() -> new ClientNotFoundException(id));
+    public Optional<ClientModel> updateClient(ClientModel clientModel){
+        return Optional.of(clientRepository.save(clientModel));
     }
 
-    public boolean deleteClient(Long id){
-        Optional<ClientModel> optionalClient = clientRepository.findById(id);
-        if (optionalClient.isPresent()){
-            clientRepository.delete(optionalClient.get());
-            return true;
-        } else {
-            return false;
-        }
+    public void deleteClient(Optional<ClientModel> optionalClient){
+        clientRepository.delete(optionalClient.get());
     }
 
 }
