@@ -5,6 +5,8 @@ import api.models.ClientModel;
 import api.repositories.ClientRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,8 +34,8 @@ public class ClientService {
         return client;
     }
 
-    public List<ClientModel> getAllClients(){
-        return clientRepository.findAll();
+    public Page<ClientModel> getAllClients(Pageable pageable){
+        return clientRepository.findAll(pageable);
     }
 
     public Optional<ClientModel> updateClient(ClientModel clientModel){
