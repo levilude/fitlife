@@ -1,4 +1,4 @@
-package api;
+package api.exceptions;
 
 import java.util.UUID;
 

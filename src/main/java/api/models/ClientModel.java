@@ -2,6 +2,7 @@ package api.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -10,7 +11,8 @@ import java.util.UUID;
 @Entity
 @Data
 @Table(name="TB_CLIENT")
-public class ClientModel implements Serializable {
+//RepresentationModel for using HATEOS (To build links)
+public class ClientModel extends RepresentationModel<ClientModel> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

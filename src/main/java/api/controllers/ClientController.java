@@ -6,6 +6,7 @@ import api.services.ClientService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -15,9 +16,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/clients")
@@ -44,14 +47,17 @@ public class ClientController {
 
         if (clientModel.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found.");
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(clientModel.get());
         }
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("clientId").ascending());
+        clientModel.get().add(linkTo(methodOn(ClientController.class).getAllClients(pageable)).withSelfRel());
+        return ResponseEntity.status(HttpStatus.OK).body(clientModel.get());
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Page<ClientModel>> getAllClients(@PageableDefault(page = 0, size = 10, sort = "clientId", direction = Sort.Direction.ASC) Pageable pageable){
+        //With HATEOS in the Customers list, there will be one more links attribute
+        //With the links you can check the details of a specific customer
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getAllClients(pageable));
     }
 
